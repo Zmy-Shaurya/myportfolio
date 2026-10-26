@@ -87,21 +87,46 @@ const List = ({ items }) => (
   <ul>{items.map((i) => <li key={i}>{i}</li>)}</ul>
 )
 
+const facts = [
+  ['Studying', 'B.Tech CSE (AI & ML), GLA University'],
+  ['Year', '2nd year, 2024 - 2028'],
+  ['Based in', 'Lucknow, India'],
+  ['Looking for', 'Internships'],
+]
+
 export default function App() {
   return (
-    <main>
-      <h1>Shaurya Pratap Singh</h1>
-      <p className="sub">B.Tech CSE (AI &amp; ML) at GLA University, Mathura. Based in Lucknow.</p>
-      <p className="intro">
-        I'm a second-year student who likes building things end to end: smart contracts, data
-        pipelines, robots and machine learning projects. I'm currently looking for internships.
-      </p>
-      <p className="links">
-        {links.map(([label, href]) => <a key={label} href={href}>{label}</a>)}
-      </p>
+    <>
+      <header className="bar">
+        <div className="wrap bar-in">
+          <strong>Shaurya Pratap Singh</strong>
+          <nav>
+            {links.map(([label, href]) => <a key={label} href={href}>{label}</a>)}
+          </nav>
+        </div>
+      </header>
 
-      <h2>Projects</h2>
-      <table>
+      <main className="wrap">
+        <section className="hero">
+          <div>
+            <h1>Hi, I'm Shaurya.</h1>
+            <p className="lead">
+              I'm a CS student who likes building things end to end: smart contracts, data
+              pipelines, robots and machine learning projects. Python is what I reach for first.
+            </p>
+            <p>
+              <a className="btn" href="/resume.pdf">Download resume</a>
+              <a className="btn ghost" href={GITHUB}>GitHub</a>
+            </p>
+          </div>
+          <dl className="box facts">
+            {facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+          </dl>
+        </section>
+
+        <h2>Projects</h2>
+        <div className="box flush">
+<table>
         <thead>
           <tr><th>Project</th><th>What it does</th><th>Stack</th><th>Links</th></tr>
         </thead>
@@ -120,20 +145,28 @@ export default function App() {
           ))}
         </tbody>
       </table>
-      <p><a href={GITHUB}>More on GitHub &rarr;</a></p>
+        </div>
 
-      <h2>Skills</h2>
-      <dl>
-        {skills.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
-      </dl>
+        <h2>Skills</h2>
+        <div className="grid">
+          {skills.map(([k, v]) => (
+            <div className="box" key={k}><h3>{k}</h3><p>{v}</p></div>
+          ))}
+        </div>
 
-      <h2>Achievements</h2>
-      <List items={achievements} />
+        <div className="two">
+          <div>
+            <h2>Achievements</h2>
+            <div className="box"><List items={achievements} /></div>
+          </div>
+          <div>
+            <h2>Certifications</h2>
+            <div className="box"><List items={certs} /></div>
+          </div>
+        </div>
 
-      <h2>Certifications</h2>
-      <List items={certs} />
-
-      <footer>&copy; 2026 Shaurya Pratap Singh</footer>
-    </main>
+        <footer>&copy; 2026 Shaurya Pratap Singh</footer>
+      </main>
+    </>
   )
 }
