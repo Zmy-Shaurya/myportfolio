@@ -138,10 +138,83 @@ function useReveal() {
   }, [])
 }
 
+// reading progress (0-1) and whether we've scrolled past the hero
+function useScroll() {
+  const [s, setS] = useState({ p: 0, far: false })
+  useEffect(() => {
+    let raf = 0
+    const on = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const max = document.documentElement.scrollHeight - innerHeight
+        setS({ p: max > 0 ? scrollY / max : 0, far: scrollY > 600 })
+      })
+    }
+    addEventListener('scroll', on, { passive: true })
+    on()
+    return () => { removeEventListener('scroll', on); cancelAnimationFrame(raf) }
+  }, [])
+  return s
+}
+
+// which section is on screen, for the nav highlight
+function useActive(ids) {
+  const [active, setActive] = useState('')
+  useEffect(() => {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => e.isIntersecting && setActive(e.target.id))
+    }, { rootMargin: '-40% 0px -55% 0px' })
+    ids.forEach((id) => { const el = document.getElementById(id); el && io.observe(el) })
+    return () => io.disconnect()
+  }, [ids])
+  return active
+}
+
+// live numbers from GitHub; cached for the tab so reloads don't burn the 60/hr limit
+const HIDE_REPOS = ['Zmy-Shaurya', 'asdasdasdasdasd']
+function useGitHub() {
+  const [gh, setGh] = useState(null)
+  useEffect(() => {
+    const cached = store.get('gh-cache')
+    if (cached) { try { return setGh(JSON.parse(cached)) } catch { /* refetch */ } }
+    const user = GITHUB.split('/').pop()
+    Promise.all([
+      fetch(`https://api.github.com/users/${user}`).then((r) => r.json()),
+      fetch(`https://api.github.com/users/${user}/repos?sort=pushed&per_page=30`).then((r) => r.json()),
+    ]).then(([u, repos]) => {
+      if (!Array.isArray(repos) || u.public_repos == null) return
+      const data = {
+        repos: u.public_repos,
+        followers: u.followers,
+        recent: repos
+          .filter((r) => !r.fork && !HIDE_REPOS.includes(r.name))
+          .slice(0, 4)
+          .map((r) => ({ name: r.name, url: r.html_url, lang: r.language, pushed: r.pushed_at, desc: r.description })),
+      }
+      store.set('gh-cache', JSON.stringify(data))
+      setGh(data)
+    }).catch(() => {})
+  }, [])
+  return gh
+}
+
+const ago = (iso) => {
+  const d = Math.floor((Date.now() - new Date(iso)) / 864e5)
+  if (d < 1) return 'today'
+  if (d < 30) return `${d}d ago`
+  if (d < 365) return `${Math.floor(d / 30)}mo ago`
+  return `${Math.floor(d / 365)}y ago`
+}
+
+const SECTIONS = ['projects', 'skills', 'github']
+
 export default function App() {
   const [theme, toggleTheme] = useTheme()
   const [filter, setFilter] = useState('All')
   const [copied, setCopied] = useState(false)
+  const { p, far } = useScroll()
+  const active = useActive(SECTIONS)
+  const github = useGitHub()
   useReveal()
 
   const shown = projects.filter((p) => filter === 'All' || p.cats.includes(filter))
@@ -155,11 +228,14 @@ export default function App() {
 
   return (
     <>
+      <div className="progress" style={{ transform: `scaleX(${p})` }} />
       <header className="bar">
         <div className="wrap bar-in">
           <a className="brand" href="#top">Shaurya Pratap Singh</a>
           <nav>
-            {links.map(([label, href]) => <a key={label} href={href}>{label}</a>)}
+            {links.map(([label, href]) => (
+              <a key={label} href={href} className={href === `#${active}` ? 'active' : ''}>{label}</a>
+            ))}
           </nav>
           <button className="theme" onClick={toggleTheme} aria-label="Toggle dark mode">
             {theme === 'dark' ? 'Light' : 'Dark'}
@@ -188,6 +264,12 @@ export default function App() {
               <dt>Status</dt>
               <dd><span className="dot" />Open to internships</dd>
             </div>
+            {github && (
+              <div>
+                <dt>GitHub</dt>
+                <dd>{github.repos} public repos, {github.followers} followers</dd>
+              </div>
+            )}
           </dl>
         </section>
 
@@ -241,6 +323,21 @@ export default function App() {
           </div>
         </section>
 
+        {github?.recent.length > 0 && (
+          <section id="github" className="reveal">
+            <h2>Recently on GitHub</h2>
+            <div className="grid">
+              {github.recent.map((r) => (
+                <a className="box lift repo" key={r.name} href={r.url}>
+                  <strong>{r.name}</strong>
+                  {r.desc && <span className="desc">{r.desc}</span>}
+                  <span className="meta">{[r.lang, `pushed ${ago(r.pushed)}`].filter(Boolean).join(' · ')}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
         <div className="two reveal">
           <div>
             <h2>Achievements</h2>
@@ -254,6 +351,7 @@ export default function App() {
 
         <footer>&copy; 2026 Shaurya Pratap Singh</footer>
       </main>
+      <a className={far ? 'top show' : 'top'} href="#top" aria-label="Back to top">&uarr;</a>
     </>
   )
 }
