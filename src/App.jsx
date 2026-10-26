@@ -92,7 +92,7 @@ export default function App() {
     <main>
       <h1>Shaurya Pratap Singh</h1>
       <p className="sub">B.Tech CSE (AI &amp; ML) at GLA University, Mathura. Based in Lucknow.</p>
-      <p>
+      <p className="intro">
         I'm a second-year student who likes building things end to end: smart contracts, data
         pipelines, robots and machine learning projects. I'm currently looking for internships.
       </p>
