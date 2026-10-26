@@ -3,13 +3,15 @@ import { useEffect, useState } from 'react'
 const GITHUB = 'https://github.com/zmy-shaurya'
 const EMAIL = 'shauryapratapsingh.work@gmail.com'
 
-const links = [
+const sections = [
   ['Projects', '#projects'],
   ['Skills', '#skills'],
+]
+
+const socials = [
   ['GitHub', GITHUB],
   ['LinkedIn', 'https://linkedin.com/in/Zmy-Shaurya'],
   ['LeetCode', 'https://leetcode.com/shaurya2508'],
-  ['Resume', '/resume.pdf'],
 ]
 
 const gh = (repo) => `${GITHUB}/${repo}`
@@ -124,9 +126,10 @@ function useTheme() {
 }
 
 // fade sections in once as they scroll into view
-function useReveal() {
+// `dep` re-runs it when sections mount later (the GitHub block loads async)
+function useReveal(dep) {
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal')
+    const els = document.querySelectorAll('.reveal:not(.in)')
     if (!('IntersectionObserver' in window)) return els.forEach((e) => e.classList.add('in'))
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
@@ -135,7 +138,7 @@ function useReveal() {
     }, { threshold: 0.08 })
     els.forEach((e) => io.observe(e))
     return () => io.disconnect()
-  }, [])
+  }, [dep])
 }
 
 // reading progress (0-1) and whether we've scrolled past the hero
@@ -215,7 +218,7 @@ export default function App() {
   const { p, far } = useScroll()
   const active = useActive(SECTIONS)
   const github = useGitHub()
-  useReveal()
+  useReveal(github)
 
   const shown = projects.filter((p) => filter === 'All' || p.cats.includes(filter))
 
@@ -233,7 +236,7 @@ export default function App() {
         <div className="wrap bar-in">
           <a className="brand" href="#top">Shaurya Pratap Singh</a>
           <nav>
-            {links.map(([label, href]) => (
+            {sections.map(([label, href]) => (
               <a key={label} href={href} className={href === `#${active}` ? 'active' : ''}>{label}</a>
             ))}
           </nav>
@@ -256,6 +259,11 @@ export default function App() {
               <button className="btn ghost" onClick={copyEmail}>
                 {copied ? 'Copied!' : 'Copy email'}
               </button>
+            </p>
+            <p>
+              {socials.map(([label, href]) => (
+                <a key={label} className="btn ghost" href={href}>{label}</a>
+              ))}
             </p>
           </div>
           <dl className="box facts">
