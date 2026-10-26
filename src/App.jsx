@@ -3,34 +3,72 @@ const GITHUB = 'https://github.com/zmy-shaurya'
 const links = [
   ['Email', 'mailto:shauryapratapsingh.work@gmail.com'],
   ['GitHub', GITHUB],
-  ['LinkedIn', 'https://www.linkedin.com/in/zmy-shaurya'],
+  ['LinkedIn', 'https://linkedin.com/in/Zmy-Shaurya'],
+  ['LeetCode', 'https://leetcode.com/shaurya2508'],
   ['Resume (PDF)', '/resume.pdf'],
 ]
 
-// TODO: add PreFlag and SignSpeak AI; optional `href` shows a link under the entry
+const gh = (repo) => `${GITHUB}/${repo}`
+
+// links: [label, url]
 const projects = [
   {
+    name: 'PreFlag',
+    text: 'Privacy firewall for browser agents. Redacts PII on-device before a page or screenshot reaches the model (SIH 2026).',
+    stack: 'Manifest V3 extension, JavaScript, local NER, VLM loop',
+    links: [['Code', gh('Preflag')]],
+  },
+  {
+    name: 'SignSpeak AI',
+    text: 'Real-time ASL recognition from a webcam: MediaPipe keypoints fed to an LSTM classifier, running live on a laptop CPU.',
+    stack: 'Python, MediaPipe, LSTM',
+    links: [['Code', gh('SignSpeak-AI')]],
+  },
+  {
     name: 'LandChain',
-    stack: 'Solidity, Hardhat, Next.js, Node/Express, IPFS',
-    text: 'Land registry on the blockchain. Smart contracts handle property registration, authority verification and ownership transfers. Documents are run through OCR and stored on IPFS.',
+    text: 'Decentralized land registry and ownership transfer, with OCR on documents and IPFS storage.',
+    stack: 'Solidity, Hardhat, Next.js, Node/Express, IPFS, MetaMask',
+    links: [['Demo', 'https://land-chain-topaz.vercel.app'], ['Code', gh('LandChain')]],
   },
   {
     name: 'Crime Cast',
-    stack: 'Python, spaCy, Pandas, Supabase, Folium',
-    text: 'Takes FIR datasets and live news, pulls out crime types and locations with NLP, geocodes them and maps hotspots.',
+    text: 'Maps crime hotspots from FIR datasets and live news using NLP entity extraction and geocoding.',
+    stack: 'Python, spaCy, NewsAPI, Supabase, Folium',
+    links: [['Code', gh('Real-Time-Crime-Hotspot-Mapping')]],
+  },
+  {
+    name: 'Smart IoT Cradle',
+    text: 'Automated infant cradle that swings on demand and sends real-time wetness alerts.',
+    stack: 'ESP32, C, crank-slider mechanism',
+    links: [['Code', gh('IoT-Based-Smart-Cradle-For-Babies')]],
+  },
+  {
+    name: 'ShipWatch',
+    text: 'Hackathon demo for proactive delivery exception handling, with a case inbox and AI-drafted customer updates.',
+    stack: 'TypeScript, React, Vite',
+    links: [['Demo', 'https://shipwatch-rust.vercel.app'], ['Code', gh('Shipwatch')]],
+  },
+  {
+    name: 'Vintage Webcam Photobooth',
+    text: 'Web photobooth with retro filters and customizable strip layouts.',
+    stack: 'TypeScript, Tailwind, Framer Motion',
+    links: [['Code', gh('Vintage-Webcam-Photobooth')]],
   },
   {
     name: 'Technoxian AgriBot Rover',
+    text: 'Software for an agricultural rover and robotic arm, built for Technoxian Robotics World Cup 9.0.',
     stack: 'Python, Raspberry Pi, IoT',
-    text: 'Software for an agricultural rover and its robotic arm, built for Technoxian Robotics World Cup 9.0.',
+    links: [],
   },
 ]
 
 const skills = [
-  ['Languages', 'C, Python, Java, JavaScript, SQL'],
-  ['Web', 'React, Next.js, Node/Express, Flask, Django'],
-  ['Data / ML', 'Pandas, NumPy, spaCy'],
-  ['Tools', 'Git, Docker, Vercel, Render'],
+  ['Languages', 'C, Python, Java, JavaScript, Lua, SQL'],
+  ['Web', 'React, Tailwind, Vite, Next.js, Node/Express'],
+  ['Backend & cloud', 'Flask, Django, Firebase, Azure, MySQL, Vercel, Render'],
+  ['AI/ML & data', 'PyTorch, Pandas, NumPy, Matplotlib, Power BI'],
+  ['IoT', 'Arduino, Raspberry Pi 5, ESP32'],
+  ['Tools', 'Git, GitHub, Docker'],
 ]
 
 const achievements = [
@@ -42,6 +80,7 @@ const achievements = [
 const certs = [
   'Microsoft AZ-900 Azure Fundamentals',
   'Microsoft AI-900 AI Fundamentals',
+  'Accenture Software Engineering and Deloitte Data Analytics job simulations',
 ]
 
 const List = ({ items }) => (
@@ -62,14 +101,25 @@ export default function App() {
       </p>
 
       <h2>Projects</h2>
-      {projects.map((p) => (
-        <div className="item" key={p.name}>
-          <h3>{p.name}</h3>
-          <p className="tag">{p.stack}</p>
-          <p>{p.text}</p>
-          {p.href && <p><a href={p.href}>Code</a></p>}
-        </div>
-      ))}
+      <table>
+        <thead>
+          <tr><th>Project</th><th>What it does</th><th>Stack</th><th>Links</th></tr>
+        </thead>
+        <tbody>
+          {projects.map((p) => (
+            <tr key={p.name}>
+              <td data-label="Project"><strong>{p.name}</strong></td>
+              <td data-label="What it does">{p.text}</td>
+              <td data-label="Stack">{p.stack}</td>
+              <td data-label="Links">
+                {p.links.length
+                  ? p.links.map(([l, h]) => <a key={l} href={h}>{l}</a>)
+                  : '-'}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <p><a href={GITHUB}>More on GitHub &rarr;</a></p>
 
       <h2>Skills</h2>
