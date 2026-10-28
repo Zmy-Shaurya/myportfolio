@@ -65,7 +65,14 @@ const projects = [
     text: 'Web photobooth with retro filters and customizable strip layouts.',
     stack: ['TypeScript', 'Tailwind', 'Framer Motion'],
     cats: ['Web'],
-    links: [['Code', gh('Vintage-Webcam-Photobooth')]],
+    links: [['Demo', 'https://photobooth.shaurya-singh.is-a.dev/'], ['Code', gh('Vintage-Webcam-Photobooth')]],
+  },
+  {
+    name: 'Flip Book Maker',
+    text: 'Turns a video into a printable flip book PDF, entirely in the browser; the video is never uploaded.',
+    stack: ['JavaScript', 'jsPDF', 'ffmpeg (WASM)'],
+    cats: ['Web'],
+    links: [['Demo', 'https://flipbook-maker.shaurya-singh.is-a.dev/'], ['Code', gh('flipbook-maker')]],
   },
   {
     name: 'Technoxian AgriBot Rover',
